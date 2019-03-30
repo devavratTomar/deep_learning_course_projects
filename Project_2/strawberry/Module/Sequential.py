@@ -1,6 +1,4 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Sat Mar 30 20:40:26 2019
+from .base_module import BaseModule
 
-@author: devav
-"""
+class Sequential(BaseModule):
+    pass

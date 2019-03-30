@@ -1,7 +1,4 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Sat Mar 30 20:41:05 2019
+from .base_module import BaseModule
 
-@author: devav
-"""
-
+class Tanh(BaseModule):
+    pass

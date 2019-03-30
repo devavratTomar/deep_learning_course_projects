@@ -1,7 +1,4 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Sat Mar 30 20:39:40 2019
+from .base_module import BaseModule
 
-@author: devav
-"""
-
+class ReLU(BaseModule):
+    pass
