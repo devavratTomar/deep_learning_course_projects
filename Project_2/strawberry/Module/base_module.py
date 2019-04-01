@@ -1,15 +1,12 @@
 class BaseModule(object):
     """
     This is the base class for all submodules.
-    """
-    def __init__(self):
-        pass
-    
+    """    
     def forward(self):
-        pass
+        raise NotImplementedError
     
     def backward(self):
-        pass
+        raise NotImplementedError
     
     def param(self):
-        pass
+        raise NotImplementedError

@@ -1,9 +1,3 @@
-"""
-Implement all losses here
-"""
+from .MSE import *
 
-def MSE(input, labels):
-    pass
-
-def CrossEntropy(input, labels):
-    pass
+# TODO: Implement other losses?
