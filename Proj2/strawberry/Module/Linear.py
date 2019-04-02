@@ -1,5 +1,4 @@
 import torch
-import math
 from .base_module import BaseModule
 
 #TODO: Add GPU support for faster computation
@@ -16,7 +15,7 @@ class Linear(BaseModule):
     def __init__(self, in_features, out_features):
         #TODO: add an initialization module that can initialize parameters according to a distribution
         #TODO: make bias optional?
-        std = math.sqrt(2./in_features*out_features)
+        std = (2./(in_features*out_features))**0.5
         self.W = torch.empty((in_features, out_features)).normal_(std=std)
         self.b = torch.empty((1, out_features)).zero_()
         
@@ -34,10 +33,10 @@ class Linear(BaseModule):
         :return: output of shape [batch_size, out_features]
         """
         assert type(inputs) == torch.Tensor
-        # reset previous gradients
-        self.grad_W.zero_()
-        self.grad_b.zero_()
-        
+        # reset previous gradients?
+#        self.grad_W.zero_()
+#        self.grad_b.zero_()
+#        
         self.data = inputs
         return torch.mm(inputs, self.W) + self.b
         
