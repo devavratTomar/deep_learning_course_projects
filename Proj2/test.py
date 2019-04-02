@@ -25,4 +25,4 @@ for iter in range(10000):
         print("iter: {}, loss: {}".format(iter, mse))
 
 print("True weights: {}, {}".format(W, B))
-print("Learned weights: {}".format(lin_layer.W, lin_layer.b))
+print("Learned weights: {}, {}".format(lin_layer.W, lin_layer.b))

@@ -13,9 +13,9 @@ class MSE(BaseModule):
         compute norm of inputs
         """
         if self.reduce:
-            return inputs.pow(2).sum()
-        else:
             return inputs.pow(2).sum()/inputs.shape[0]
+        else:
+            return inputs.pow(2).sum()
     
     def backward(self):
         """
