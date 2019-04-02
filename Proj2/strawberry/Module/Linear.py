@@ -1,4 +1,4 @@
-import torch
+import torch.empty
 from .base_module import BaseModule
 
 #TODO: Add GPU support for faster computation

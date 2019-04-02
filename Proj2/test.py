@@ -1,10 +1,13 @@
-import torch
+import torch.empty
 import math
 import matplotlib.pyplot as plt
 
 from strawberry import Module
 from strawberry import Loss
 from strawberry import Optimizer
+
+#autograd globally off
+torch .set_grad_enabled ( False )
 
 # testing linear module
 def test_linear():
