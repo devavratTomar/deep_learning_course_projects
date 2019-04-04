@@ -19,7 +19,7 @@ class MSE(BaseModule):
     
     def backward(self):
         """
-        Computes gradients with respect to the input of this module and returns it
+        Computes gradients with respect to the input of this module and returns it.
         """
         N = self.data.shape[0] if self.reduce else 1.
         return 2*(self.data)/N 

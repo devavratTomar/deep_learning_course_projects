@@ -33,23 +33,20 @@ class Linear(BaseModule):
         :return: output of shape [batch_size, out_features]
         """
         assert type(inputs) == torch.Tensor
-        # reset previous gradients?
-#        self.grad_W.zero_()
-#        self.grad_b.zero_()
-#        
+        
+        # reset previous gradients?    
         self.data = inputs
         return torch.mm(inputs, self.W) + self.b
         
     def backward(self, gradwrtoutput):
         """
-        Performs backward pass step. It should get input as gradient of loss with respect to the output of this module.
-        This function accumulate the gradients with respect to the parameters  and return a tensor or a tuple of tensors
-        containing the gradient of the loss wrt the module’s input.
+        Performs backward pass through this module.
         
         :param gradwrtoutput: gradient of loss with respect to the output of this module. shape should be [batch_size, out_features]
+        
+        :return: gradient of loss with respect to the input of this module.
         """
         #TODO: prove that the gradients of loss with respect to W and b is the following in report
-        
         #gradient accumulation
         self.grad_W = torch.mm(self.data.t(), gradwrtoutput)
         self.grad_b = gradwrtoutput.sum(dim=0, keepdim=True)
