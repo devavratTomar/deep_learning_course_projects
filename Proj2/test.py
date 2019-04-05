@@ -79,6 +79,7 @@ def test_softmax():
     TRAIN_FEATURES = torch.empty(1000, 2).uniform_(0, 1)
     print(TRAIN_FEATURES.size())
     TRAIN_LABELS = h.get_labels(TRAIN_FEATURES, torch.empty(1, 2).fill_(0.5))
+    TRAIN_LABELS = (1+TRAIN_LABELS)/2
     print(TRAIN_LABELS.size())
     
     plt.figure()
