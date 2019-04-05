@@ -8,7 +8,7 @@ class MSE(BaseModule):
     def __init__(self, reduce=True):
         self.reduce = reduce
     
-    def forward(self, inputs):
+    def __compute_norm(self, inputs):
         """
         compute norm of inputs
         """
@@ -34,4 +34,4 @@ class MSE(BaseModule):
         """
         
         self.data = prediction - labels
-        return self.forward(self.data)
+        return self.__computer_norm(self.data)
