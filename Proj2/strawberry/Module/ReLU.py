@@ -1,4 +1,4 @@
-import torch.empty
+import torch
 from .base_module import BaseModule
 
 class ReLU(BaseModule):
