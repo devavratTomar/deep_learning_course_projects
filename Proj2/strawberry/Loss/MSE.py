@@ -34,4 +34,4 @@ class MSE(BaseModule):
         """
         
         self.data = prediction - labels
-        return self.__computer_norm(self.data)
+        return self.__compute_norm(self.data)

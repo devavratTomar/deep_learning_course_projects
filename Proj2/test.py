@@ -100,7 +100,7 @@ def test_softmax():
 
     
     loss_ce = Loss.CrossEntropy();
-    opt = Optimizer.SGD(model, loss_ce, lr=0.01)
+    opt = Optimizer.SGD(model, loss_ce, lr=0.05)
     
     for epoch in range(100):
         for batch in range(n_batches):
@@ -120,3 +120,4 @@ def test_softmax():
     h.plot_points(TEST_FEATURES, test_labels, "Test points and predictions")
     
 test_softmax()
+#test_sequential()
