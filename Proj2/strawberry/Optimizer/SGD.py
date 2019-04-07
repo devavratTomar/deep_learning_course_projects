@@ -5,7 +5,7 @@ class SGD(Optimizer):
     Vanilla Stochastic Gradient Descent Implementation
     
     :param model: Should be one of Linear or Sequential
-    :param loss: Should be of type MSE
+    :param loss: Should be of type MSE or CrossEntropy
     :param lr: learning rate of stochastic gradient descent
     """
     
@@ -22,7 +22,7 @@ class SGD(Optimizer):
         predictions = self.model.forward(inputs)
         
         # Forward predictions to loss function
-        mse = self.loss(predictions, labels)
+        loss = self.loss(predictions, labels)
         
         #Backward of loss so that gradients are accumulated in it. Then backword of Model to accumulate its gradients.
         self.model.backward(self.loss.backward())
@@ -30,4 +30,4 @@ class SGD(Optimizer):
         for param in self.model.param():
             param[0] -= self.lr*param[1]
             
-        return mse
+        return loss
