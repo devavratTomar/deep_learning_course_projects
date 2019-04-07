@@ -1,4 +1,5 @@
 from ..Module.base_module import BaseModule
+from torch.autograd import Variable
 import torch
 
 class CrossEntropy(BaseModule):
@@ -40,11 +41,21 @@ class CrossEntropy(BaseModule):
         
         loss = torch.nn.NLLLoss()
         print("true loss")
-        print(loss(inputs.log_softmax(1), targets.max(1)[1]))
+        
+        input_tens = Variable(inputs.log_softmax(1).data, requires_grad=True)
+        
+        with torch.enable_grad():
+            output = loss(input_tens, targets.max(1)[1])
+        print(output)
+        output.backward()
+       
         
         print("my loss")
         ce_loss = -(log_softmax * targets).sum()/N
         print(ce_loss)
+        
+        print("true_gradient:")
+        print(input_tens.grad)
         
         return ce_loss
 
@@ -52,6 +63,9 @@ class CrossEntropy(BaseModule):
         """
         Computes gradients with respect to the input of this module and returns it
         """
+        
+        
+    def __grad_soft_max(self):
         
         
     

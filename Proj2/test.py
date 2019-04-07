@@ -8,7 +8,7 @@ from strawberry import Optimizer
 import helpers as h
 
 #autograd globally off
-torch.set_grad_enabled ( False )
+#torch.set_grad_enabled ( False )
 
 # testing linear module
 def test_linear():
@@ -118,6 +118,5 @@ def test_softmax():
     
     plt.figure()
     h.plot_points(TEST_FEATURES, test_labels, "Test points and predictions")
-    
     
 test_softmax()

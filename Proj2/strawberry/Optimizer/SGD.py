@@ -5,7 +5,7 @@ class SGD(Optimizer):
     Vanilla Stochastic Gradient Descent Implementation
     
     :param model: Should be one of Linear or Sequential
-    :param loss: Should be of type MSE
+    :param loss: Should be of type MSE or CrossEntropy
     :param lr: learning rate of stochastic gradient descent
     """
     
