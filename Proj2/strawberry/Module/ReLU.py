@@ -17,6 +17,13 @@ class ReLU(BaseModule):
         return self.data
 
     def backward(self, gradwrtoutput):
+        """
+        Performs backward pass through this module.
+        
+        :param gradwrtoutput: gradient of loss with respect to the output of this module. shape should be [batch_size, out_features]
+        
+        :return: gradient of loss with respect to the input of this module.
+        """
         gradin = torch.empty(self.data.shape).zero_()
         gradin[self.data > 0] = 1.0
         return gradin*gradwrtoutput
