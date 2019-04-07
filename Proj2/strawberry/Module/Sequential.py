@@ -20,7 +20,11 @@ class Sequential(BaseModule):
 
     def backward(self, gradwrtoutput):
         """
-        Performs backpropagation through all layers
+        Performs backward pass through this module.
+        
+        :param gradwrtoutput: gradient of loss with respect to the output of this module. shape should be [batch_size, out_features]
+        
+        :return: gradient of loss with respect to the input of this module.
         """
         grad_out = gradwrtoutput
         for layer in reversed(self.layers):
