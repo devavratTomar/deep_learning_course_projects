@@ -17,8 +17,17 @@ def get_labels(data, center):
 
 
 def plot_points(data, labels, title):
+    """
+    Plots data with labels
+    
+    :param data:     data set
+    :param labels:   corresponding labels in one hot encoding
+    :param title:    title of the plot
+    """
     cmap = ["red", "green"]
-    c = [cmap[int((l.item()+1)//2)] for l in labels]
+    
+    labels_flatten = torch.argmax(labels, 1)
+    c = [cmap[int((l.item()+1)//2)] for l in labels_flatten]
     plt.scatter(data[:,0], data[:,1], c=c)
     plt.title(title)
     plt.axis('equal')

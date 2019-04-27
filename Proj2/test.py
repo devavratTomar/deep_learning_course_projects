@@ -70,13 +70,14 @@ def test_softmax():
     #print(TRAIN_FEATURES.size())
     TRAIN_LABELS = h.get_labels(TRAIN_FEATURES, torch.empty(1, 2).fill_(0.5))
     #print(TRAIN_LABELS.size())
+    print(TRAIN_LABELS[0:5])
     
     TEST_FEATURES = torch.empty(1000, 2).uniform_(0, 1)
     TEST_LABELS   = h.get_labels(TEST_FEATURES, torch.empty(1, 2).fill_(0.5)) 
     
     
     plt.figure()
-    h.plot_points(TRAIN_FEATURES, TRAIN_LABELS[:,0], "Training points and labels")
+    h.plot_points(TRAIN_FEATURES, TRAIN_LABELS, "Training points and labels")
   
     model = Module.Sequential(Module.Linear(2, 25),
                               Module.ReLU(),
@@ -94,7 +95,7 @@ def test_softmax():
 
     h.plot_points(TEST_FEATURES, test_labels, "Test points and predictions")
     
-#test_softmax()
-test_sequential()
+test_softmax()
+#test_sequential()
 
 #test_sequential()

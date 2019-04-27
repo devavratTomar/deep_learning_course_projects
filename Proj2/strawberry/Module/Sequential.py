@@ -80,12 +80,11 @@ class Sequential(BaseModule):
         
         model_output = self.forward(x_test)
         
+        # Create one hot encoding of predicted labels
         max_idx = torch.argmax(model_output, 1, keepdim=True)
-        print(max_idx[0:5])
         one_hot = torch.FloatTensor(model_output.shape)
         one_hot.zero_()
         one_hot.scatter_(1, max_idx, 1)
-        print(one_hot[0:5])
         
         return one_hot       
         
