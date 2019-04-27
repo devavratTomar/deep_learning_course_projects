@@ -1,4 +1,5 @@
 from .base_module import BaseModule
+import torch
 
 class Sequential(BaseModule):
     """
@@ -39,7 +40,8 @@ class Sequential(BaseModule):
                 params.append(param)
         return params
     
-    def train(self, x_train, y_train, epochs, batch_size, opt, loss, metrics=None, validation_set=None):
+    def train(self, x_train, y_train, epochs, batch_size, opt, loss, metrics=None, 
+              validation_set=None, verbose=0):
         """
         Trains the model given the training data
         
@@ -67,16 +69,24 @@ class Sequential(BaseModule):
         
                 opt.step(self.param())
         
-            print("Epoch: {} Training loss: {}".format(epoch, training_loss))
+            if verbose:
+                print("Epoch: {} Training loss: {}".format(epoch, training_loss))
             
         
-    def predict(self, x_test, y_test):        
+    def predict(self, x_test, y_test):  
+        """
+        Predicst labels and returns one hot vector
+        """
         
         model_output = self.forward(x_test)
         
-        # Predict class/label from the output
-        predicted_labels = model_output.shape[1] - 1 - model_output.max(1)[1]
+        max_idx = torch.argmax(model_output, 1, keepdim=True)
+        print(max_idx[0:5])
+        one_hot = torch.FloatTensor(model_output.shape)
+        one_hot.zero_()
+        one_hot.scatter_(1, max_idx, 1)
+        print(one_hot[0:5])
         
-        return predicted_labels       
+        return one_hot       
         
         
