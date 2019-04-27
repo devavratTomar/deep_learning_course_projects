@@ -16,3 +16,4 @@ def plot_points(data, labels, title):
     c = [cmap[int((l.item()+1)//2)] for l in labels]
     plt.scatter(data[:,0], data[:,1], c=c)
     plt.title(title)
+    plt.axis('equal')

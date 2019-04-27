@@ -38,3 +38,37 @@ class Sequential(BaseModule):
             for param in layer.param():
                 params.append(param)
         return params
+    
+    def train(self, x_train, y_train, epochs, batch_size, opt, loss, metrics=None, validation_set=None):
+        """
+        Trains the model given the training data
+        
+        :param gradwrtoutput: 
+        
+        :return: gradient of loss with respect to the input of this module.
+        """
+        n_batches = x_train.shape[0]//batch_size
+        
+        for epoch in range(epochs):
+            
+            for batch in range(n_batches):
+                
+                train_data   = x_train[batch*batch_size:(batch+1)*batch_size, :]
+                train_labels = y_train[batch*batch_size:(batch+1)*batch_size, :]
+                
+                # Forward pass:
+                predictions = self.forward(train_data)
+                
+                # Forward predictions to loss function
+                training_loss = loss(predictions, train_labels)
+                
+                # Backward of loss so that gradients are accumulated in it. Then backword of Model to accumulate its gradients.
+                self.backward(loss.backward())
+        
+                opt.step(self.param())
+        
+            print("Epoch: {} Training loss: {}".format(epoch, training_loss))
+        
+    def predict(self, x_test, y_test):        
+        
+        print(self.forward(x_test))
