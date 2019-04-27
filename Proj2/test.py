@@ -45,7 +45,7 @@ def test_sequential():
 
     
     plt.figure()
-    h.plot_points(TRAIN_FEATURES, TRAIN_LABELS[:,0], "Training Data with Labels")
+    h.plot_points(TRAIN_FEATURES, TRAIN_LABELS, "Training Data with Labels")
     
     model = Module.Sequential(Module.Linear(2, 25),
                               Module.ReLU(),
@@ -56,7 +56,8 @@ def test_sequential():
     loss_fun = Loss.MSE()
     opt = Optimizer.SGD(lr=0.01)
     
-    model.train(TRAIN_FEATURES, TRAIN_LABELS, epochs=100, batch_size=10, opt=opt, loss=loss_fun)
+    model.train(TRAIN_FEATURES, TRAIN_LABELS, epochs=1000, batch_size=10, opt=opt, 
+                loss=loss_fun, verbose=True)
 
         
     test_labels = model.predict(TEST_FEATURES, TEST_LABELS)
@@ -70,7 +71,6 @@ def test_softmax():
     #print(TRAIN_FEATURES.size())
     TRAIN_LABELS = h.get_labels(TRAIN_FEATURES, torch.empty(1, 2).fill_(0.5))
     #print(TRAIN_LABELS.size())
-    print(TRAIN_LABELS[0:5])
     
     TEST_FEATURES = torch.empty(1000, 2).uniform_(0, 1)
     TEST_LABELS   = h.get_labels(TEST_FEATURES, torch.empty(1, 2).fill_(0.5)) 
@@ -89,13 +89,14 @@ def test_softmax():
     loss_ce = Loss.CrossEntropy();
     opt = Optimizer.SGD(lr=0.05)
     
-    model.train(TRAIN_FEATURES, TRAIN_LABELS, epochs=100, batch_size=10, opt=opt, loss=loss_ce)
+    model.train(TRAIN_FEATURES, TRAIN_LABELS, epochs=500, batch_size=10, opt=opt, 
+                loss=loss_ce, verbose=True)
     
     test_labels = model.predict(TEST_FEATURES, TEST_LABELS)
 
     h.plot_points(TEST_FEATURES, test_labels, "Test points and predictions")
     
-test_softmax()
-#test_sequential()
+#test_softmax()
+test_sequential()
 
 #test_sequential()

@@ -1,5 +1,7 @@
 from .base_module import BaseModule
 import torch
+from math import max
+from strawberry.utils import get_accuracy
 
 class Sequential(BaseModule):
     """
@@ -8,6 +10,7 @@ class Sequential(BaseModule):
     def __init__(self, *layers):
         #TODO: check if inputs are of type BaseModule
         self.layers = [layer for layer in layers]
+        self.history = dict()
     
     def forward(self, inputs):
         """
@@ -40,37 +43,112 @@ class Sequential(BaseModule):
                 params.append(param)
         return params
     
-    def train(self, x_train, y_train, epochs, batch_size, opt, loss, metrics=None, 
-              validation_set=None, verbose=0):
+    
+    def _get_moving_average(self, train_data, train_labels, prev_avg, nb, metric):
         """
-        Trains the model given the training data
+        Calculates prediction and returns moving average for the given metric
         
-        :param gradwrtoutput: 
+        :param train_data:    training data
+        :param train_labels:  labels of the training data
+        :param prev_avg:      previous average of the metric
+        :param nb:            number of values averaged
+        :param metric:        metric 
         
-        :return: gradient of loss with respect to the input of this module.
+        :return:              moving average
+        """
+        
+        # Forward pass
+        predictions = self.forward(train_data)
+                        
+        # Forward predictions to metric
+        value = metric(predictions, train_labels)
+                
+        # Moving average 
+        new_avg = (value + max(nb, 1) * prev_avg) / (nb+1)
+        
+        return new_avg
+                
+
+    
+    def train(self, x_train, y_train, epochs, batch_size, opt, loss, accuracy=False, 
+              validation_set=None, verbose=False):
+        """
+        Trains the model on the given data with specified parameters
+            
+        :param x_train:          training data 
+        :param y_train:          labels of the training data
+        :param epochs:           epochs for training
+        :param batch_size:       batch size
+        :param opt:              optimizer
+        :param loss:             loss      
+        :param accuracy:         whether to monitor the accuracy
+        :param validation_set:   (validation data, labels)
+        :param verbose:          whether to print the progress
+        
+        :return: gradient of loss with respect to the input of this module. 
         """
         n_batches = x_train.shape[0]//batch_size
         
         for epoch in range(epochs):
+            
+            avg_loss = 0.0
+            
+            if accuracy:
+                avg_accuracy = 0.0
             
             for batch in range(n_batches):
                 
                 train_data   = x_train[batch*batch_size:(batch+1)*batch_size, :]
                 train_labels = y_train[batch*batch_size:(batch+1)*batch_size, :]
                 
-                # Forward pass:
-                predictions = self.forward(train_data)
+                # Update loss average
+                avg_loss = self._get_moving_average(train_data, train_labels, prev_avg=avg_loss, nb=batch, 
+                                                    metric=loss)
                 
-                # Forward predictions to loss function
-                training_loss = loss(predictions, train_labels)
+                if accuracy:
+                    # Update the accuracy average
+                    avg_accuracy = self._get_moving_average(train_data, train_labels, prev_avg=avg_loss, nb=batch, 
+                                                            metric=get_accuracy)
                 
                 # Backward of loss so that gradients are accumulated in it. Then backword of Model to accumulate its gradients.
                 self.backward(loss.backward())
         
                 opt.step(self.param())
+                
+               
+            # Update loss average
+            avg_loss = self._get_moving_average(train_data, train_labels, prev_avg=avg_loss,
+                                               nb=epochs, metric=loss)
+            self.history['loss'].append(avg_loss)
+                
+            if accuracy:
+                    # Update the accuracy average
+                    avg_accuracy = self._get_moving_average(train_data, train_labels, prev_avg=avg_loss,
+                                               nb=batch, metric=get_accuracy) 
+                    self.history['acc'].append(avg_accuracy)
+                    
+            if validation_set is not None:
+                # Predict on validation data
+                val_pred = self.forward(validation_set[0])
+                val_loss = loss(val_pred, validation_set[1])                                   
+                self.history['val_loss'].append(val_loss)
+                
+                if accuracy:
+                    val_acc = get_accuracy(val_pred, validation_set[1])
+                    self.history['val_acc'].append(val_acc)
         
             if verbose:
-                print("Epoch: {} Training loss: {}".format(epoch, training_loss))
+                info_msg = "Epoch: {} Training loss: {}".format(epoch, self.history['loss'][-1])
+                
+                if accuracy:
+                    info_msg += " Acc.: {}".format(self.history['acc'][-1])
+                    
+                if validation_set is not None:
+                    info_msg += " Validation Loss: {}".format(self.history['val_loss'][-1])
+                    if accuracy:
+                        info_msg += " Validation Acc.: {}".format(self.history['val_acc'][-1])
+                        
+                print(info_msg)
             
         
     def predict(self, x_test, y_test):  
