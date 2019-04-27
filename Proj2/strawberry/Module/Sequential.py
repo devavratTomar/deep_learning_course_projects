@@ -68,7 +68,15 @@ class Sequential(BaseModule):
                 opt.step(self.param())
         
             print("Epoch: {} Training loss: {}".format(epoch, training_loss))
+            
         
     def predict(self, x_test, y_test):        
         
-        print(self.forward(x_test))
+        model_output = self.forward(x_test)
+        
+        # Predict class/label from the output
+        predicted_labels = model_output.shape[1] - 1 - model_output.max(1)[1]
+        
+        return predicted_labels       
+        
+        
