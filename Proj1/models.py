@@ -1,5 +1,7 @@
 from torch import nn
 from torch.nn import functional as F
+from torch.autograd import Variable
+import torch
 
 
 class MLPNet(nn.Module):
@@ -76,3 +78,56 @@ class ConvNet(nn.Module):
         x_out = self.fc2(x_out)
         
         return x_out
+
+
+class SharedMLPModule(nn.Module):
+    
+    
+    def __init__(self, in_features, out_features, n_layers, n_hidden):
+        super(SharedMLPModule, self).__init__()
+        
+        self.in_features = in_features
+        self.out_features = out_features
+        self.n_layers = n_layers
+        self.n_hidden = n_hidden
+        
+        
+        self.weights = []
+        self.biases  = []
+        
+        #create first fully connected hidden layer withs shared weights
+        self.weights.append(Variable(torch.random_normal([in_features, n_hidden])))
+        self.biases.append(Variable(torch.random_normal([n_hidden])))
+        
+        #ceate n_hidden-2 fully connected layersw with shared weights 
+        for _ in range(self.n_layers - 2):
+           self.weights.append(Variable(torch.random_normal([n_hidden, n_hidden])))
+           self.biases.append(Variable(torch.random_normal([n_hidden])))
+           
+        #create output layer
+        self.weights.append(Variable(torch.random_normal([n_hidden, out_features])))
+        self.biases.append(Variable(torch.random_normal([out_features])))
+        
+    def forward(self, x_in):
+        """
+        Performs forward pass for the given input: shape should be [batch_size, 2, in_features]
+        """
+        
+        first_image  = x_in[:, 0, :]
+        second_image = x_in[:, 1, :]
+           
+        #input layer
+        l1_1 = torch.mm(self.weights[0], first_image) + self.biases[0]
+        l1_2 = torch.mm(self.weights[0], second_image) + self.biases[0]
+        
+        #middle hidden layers
+        for i in range(self.n_layers - 2):
+           
+           l1_1 = torch.mm(self.weights[i+1], l1_1) + self.biases[i+1]
+           l1_2 = torch.mm(self.weights[i+1], l1_2) + self.biases[i+1]
+           
+        #output layer
+        l1_1 = torch.mm(self.weights[-1], l1_1) + self.biases[-1]
+        l1_2 = torch.mm(self.weights[-1], l1_2) + self.biases[-1]
+        
+        
