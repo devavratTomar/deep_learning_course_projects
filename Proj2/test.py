@@ -57,10 +57,11 @@ def test_sequential():
     opt = Optimizer.SGD(lr=0.01)
     
     model.train(TRAIN_FEATURES, TRAIN_LABELS, epochs=1000, batch_size=10, opt=opt, 
-                loss=loss_fun, verbose=True)
+                loss=loss_fun, verbose=True, accuracy=True, 
+                validation_set=(TEST_FEATURES, TEST_LABELS))
 
         
-    test_labels = model.predict(TEST_FEATURES, TEST_LABELS)
+    test_labels = model.predict(TEST_FEATURES)
     
     plt.figure()
     h.plot_points(TEST_FEATURES, test_labels, "Test points and predictions")
@@ -68,12 +69,10 @@ def test_sequential():
     
 def test_softmax():
     TRAIN_FEATURES = torch.empty(1000, 2).uniform_(0, 1)
-    #print(TRAIN_FEATURES.size())
     TRAIN_LABELS = h.get_labels(TRAIN_FEATURES, torch.empty(1, 2).fill_(0.5))
-    #print(TRAIN_LABELS.size())
     
     TEST_FEATURES = torch.empty(1000, 2).uniform_(0, 1)
-    TEST_LABELS   = h.get_labels(TEST_FEATURES, torch.empty(1, 2).fill_(0.5)) 
+    #TEST_LABELS   = h.get_labels(TEST_FEATURES, torch.empty(1, 2).fill_(0.5)) 
     
     
     plt.figure()
@@ -92,7 +91,7 @@ def test_softmax():
     model.train(TRAIN_FEATURES, TRAIN_LABELS, epochs=500, batch_size=10, opt=opt, 
                 loss=loss_ce, verbose=True)
     
-    test_labels = model.predict(TEST_FEATURES, TEST_LABELS)
+    test_labels = model.predict(TEST_FEATURES)
 
     h.plot_points(TEST_FEATURES, test_labels, "Test points and predictions")
     
