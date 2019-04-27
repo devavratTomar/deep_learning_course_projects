@@ -108,10 +108,7 @@ class Sequential(BaseModule):
                 
                 if accuracy:
                     # Update the accuracy average
-                    #print(model_output[0:5])
                     pred = self.predict_from_output(model_output)
-                    #print(pred[0:5])
-                    #print(train_labels[0:5])
                     avg_accuracy = self._get_moving_average(pred, train_labels, prev_avg=avg_accuracy, nb=batch, 
                                                             metric=get_accuracy)
                 
@@ -145,15 +142,15 @@ class Sequential(BaseModule):
                     self.history['val_acc'].append(val_acc)
         
             if verbose:
-                info_msg = "Epoch: {} Training loss: {:.4f}".format(epoch, self.history['loss'][-1])
+                info_msg = "Epoch: {}, Training loss: {:.4f}".format(epoch, self.history['loss'][-1])
                 
                 if accuracy:
-                    info_msg += " Acc.: {0:.4f}%".format(self.history['acc'][-1])
+                    info_msg += ", Acc.: {0:.4f}%".format(self.history['acc'][-1])
                     
                 if validation_set is not None:
-                    info_msg += " Validation Loss: {0:.4f}".format(self.history['val_loss'][-1])
+                    info_msg += ", Validation Loss: {0:.4f}".format(self.history['val_loss'][-1])
                     if accuracy:
-                        info_msg += " Validation Acc.: {0:.4f}%".format(self.history['val_acc'][-1])
+                        info_msg += ", Validation Acc.: {0:.4f}%".format(self.history['val_acc'][-1])
                         
                 print(info_msg)
             
