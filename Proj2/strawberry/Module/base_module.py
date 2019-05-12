@@ -1,7 +1,12 @@
 class BaseModule(object):
     """
     This is the base class for all submodules.
-    """    
+    """ 
+    train = True
+    def __init__(self):
+        self.train = True
+    
+    
     def forward(self):
         raise NotImplementedError
     
@@ -16,3 +21,15 @@ class BaseModule(object):
     
     def param(self):
         raise NotImplementedError
+        
+    def train(self)
+        """
+        Sets training flag to True
+        """
+        self.train = True
+        
+    def eval(self)
+        """
+        Sets training flag to False
+        """
+        self.train = False
