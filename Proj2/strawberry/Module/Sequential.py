@@ -145,12 +145,12 @@ class Sequential(BaseModule):
                 info_msg = "Epoch: {}, Training loss: {:.4f}".format(epoch, self.history['loss'][-1])
                 
                 if accuracy:
-                    info_msg += ", Acc.: {0:.4f}%".format(self.history['acc'][-1])
+                    info_msg += ", Acc.: {0:.2f}%".format(self.history['acc'][-1])
                     
                 if validation_set is not None:
                     info_msg += ", Validation Loss: {0:.4f}".format(self.history['val_loss'][-1])
                     if accuracy:
-                        info_msg += ", Validation Acc.: {0:.4f}%".format(self.history['val_acc'][-1])
+                        info_msg += ", Validation Acc.: {0:.2f}%".format(self.history['val_acc'][-1])
                         
                 print(info_msg)
             
