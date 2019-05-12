@@ -9,7 +9,6 @@ class Dropout(BaseModule):
     param p: keep probability of a neuron
     """
     def __init__(self, p=0.5): 
-        super(Dropout, self).__init__()
         self.data = None
         if p < 0 or p > 1:
             raise ValueError("Probability has to be between 0 and 1, " "but got {}".format(p))
@@ -19,7 +18,7 @@ class Dropout(BaseModule):
         """
         Apply Dropouts on inputs.
         """
-        if self.train_flag:
+        if Dropout.train_flag:
             binomial = bn.Binomial(probs=self.p)
             self.data = binomial.sample(inputs.size())
             return inputs * self.data * (1.0/(self.p))
@@ -33,7 +32,7 @@ class Dropout(BaseModule):
         
         :return: gradient of loss with respect to the input of this module.
         """
-        if self.train_flag:
+        if Dropout.train_flag:
             gradin = torch.empty(self.data.shape).zero_()
             gradin[self.data > 0] = 1.0
             return gradin*gradwrtoutput

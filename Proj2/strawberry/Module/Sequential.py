@@ -117,7 +117,7 @@ class Sequential(BaseModule):
         
                 opt.step(self.param())
                 
-               
+            self.eval() 
             # Update loss average
             model_output = self.forward(train_data)
             avg_loss = self._get_moving_average(model_output, train_labels, prev_avg=avg_loss,
@@ -153,6 +153,7 @@ class Sequential(BaseModule):
                         info_msg += ", Validation Acc.: {0:.2f}%".format(self.history['val_acc'][-1])
                         
                 print(info_msg)
+            self.set_train()
             
         
     def predict(self, x):  
@@ -163,8 +164,10 @@ class Sequential(BaseModule):
             
         :return:           prediction 
         """
-        
+        self.eval()
         model_output = self.forward(x)
+        self.set_train()
+        
         return self.predict_from_output(model_output)
 
 
@@ -176,7 +179,6 @@ class Sequential(BaseModule):
             
         :return:           prediction 
         """
-        
         # Create one hot encoding of predicted labels
         max_idx = torch.argmax(model_output, 1, keepdim=True)
         one_hot = torch.FloatTensor(model_output.shape)

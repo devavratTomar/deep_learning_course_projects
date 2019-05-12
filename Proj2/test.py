@@ -32,8 +32,6 @@ def test_linear():
     print("Learned weights: {}, {}".format(lin_layer.W, lin_layer.b))
 
 
-    
-# TODO: implement softmax layer for one hot classification and cross entropy loss functions
 
 def test_sequential():
     
@@ -49,12 +47,13 @@ def test_sequential():
     
     model = Module.Sequential(Module.Linear(2, 25),
                               Module.ReLU(),
-                              Module.Dropout(),
+                              Module.Dropout(p=.5),
                               Module.Linear(25, 25),
                               Module.ReLU(),
-                              Module.Dropout(),
+                              Module.Dropout(p=.5),
                               Module.Linear(25, 2),
                               Module.Tanh())
+
     loss_fun = Loss.MSE()
     opt = Optimizer.ADAM(lr=0.001)
     
@@ -74,7 +73,7 @@ def test_softmax():
     TRAIN_LABELS = h.get_labels(TRAIN_FEATURES, torch.empty(1, 2).fill_(0.5))
     
     TEST_FEATURES = torch.empty(1000, 2).uniform_(0, 1)
-    #TEST_LABELS   = h.get_labels(TEST_FEATURES, torch.empty(1, 2).fill_(0.5)) 
+    TEST_LABELS   = h.get_labels(TEST_FEATURES, torch.empty(1, 2).fill_(0.5)) 
     
     
     plt.figure()
@@ -82,22 +81,25 @@ def test_softmax():
   
     model = Module.Sequential(Module.Linear(2, 25),
                               Module.ReLU(),
+                              Module.Dropout(p=.5),
                               Module.Linear(25, 25),
                               Module.ReLU(),
+                              Module.Dropout(p=.5),
                               Module.Linear(25, 2))
 
 
     loss_ce = Loss.CrossEntropy();
-    opt = Optimizer.SGD(lr=0.05)
+    opt = Optimizer.ADAM(lr=0.001)
     
-    model.train(TRAIN_FEATURES, TRAIN_LABELS, epochs=500, batch_size=10, opt=opt, 
-                loss=loss_ce, verbose=True)
-    
+    model.train(TRAIN_FEATURES, TRAIN_LABELS, epochs=1000, batch_size=10, opt=opt, 
+                loss=loss_ce, verbose=True, accuracy=True, 
+                validation_set=(TEST_FEATURES, TEST_LABELS))
+                    
     test_labels = model.predict(TEST_FEATURES)
 
     h.plot_points(TEST_FEATURES, test_labels, "Test points and predictions")
     
-#test_softmax()
-test_sequential()
+test_softmax()
+# test_sequential()
 
 #test_sequential()
