@@ -43,4 +43,3 @@ class ADAM(Optimizer):
         	# Update parameters    
         	param[0] -= self.lr*mhat / (torch.sqrt(vhat) + self.eps)
             
-        return loss

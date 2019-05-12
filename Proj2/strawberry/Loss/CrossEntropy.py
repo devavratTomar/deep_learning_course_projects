@@ -1,5 +1,4 @@
 from ..Module.base_module import BaseModule
-#from torch.autograd import Variable
 import torch
 
 class CrossEntropy(BaseModule):
