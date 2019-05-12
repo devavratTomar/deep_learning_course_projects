@@ -4,7 +4,7 @@ class BaseModule(object):
     """ 
     train = True
     def __init__(self):
-        self.train = True
+        self.train_flag = True
     
     
     def forward(self):
@@ -22,14 +22,14 @@ class BaseModule(object):
     def param(self):
         raise NotImplementedError
         
-    def train(self):
+    def set_train(self):
         """
         Sets training flag to True
         """
-        self.train = True
+        self.train_flag = True
         
     def eval(self):
         """
         Sets training flag to False
         """
-        self.train = False
+        self.train_flag = False
