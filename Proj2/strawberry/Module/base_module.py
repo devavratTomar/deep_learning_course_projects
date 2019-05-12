@@ -1,7 +1,8 @@
 class BaseModule(object):
     """
     This is the base class for all submodules.
-    """    
+    """ 
+    train_flag = True    
     def forward(self):
         raise NotImplementedError
     
@@ -16,3 +17,15 @@ class BaseModule(object):
     
     def param(self):
         raise NotImplementedError
+        
+    def set_train(self):
+        """
+        Sets training flag to True
+        """
+        BaseModule.train_flag = True
+        
+    def eval(self):
+        """
+        Sets training flag to False
+        """
+        BaseModule.train_flag = False
