@@ -6,7 +6,7 @@ import torch
 
 def get_accuracy(predicted_label, true_label):
     """
-    Computes accuracy given predicted and tru labels
+    Computes accuracy given predicted and true labels
     
     :param predicted_label:   predicted labels, one-hot encoding
     :param true_label:        true labels, one-hot encoding

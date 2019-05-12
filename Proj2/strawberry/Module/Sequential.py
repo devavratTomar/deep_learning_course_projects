@@ -1,25 +1,47 @@
+"""
+Class representing sequential architecture
+"""
+
 from .base_module import BaseModule
 import torch
 from strawberry.utils import get_accuracy
 
 class Sequential(BaseModule):
     """
-    Implements MLP with layers Linear, RelU, Tanh.
+    Implements MLP with layers Linear, RelU, Tanh etc.
     """
     def __init__(self, *layers):
         
         self.layers = [layer for layer in layers]
+        
+        #history object for storing train/val loss and/or accuracy
         self.history = dict()
         self.history['loss']=[]
         self.history['val_loss']=[]
         self.history['acc']=[]
         self.history['val_acc']=[]
+        
+        
+    def add(self, layer):
+        """
+        Adds layer to the network
+        
+        :param layer: adds layer to the architecture
+        """
+        
+        self.layers.append(layer)
+        
     
     def forward(self, inputs):
         """
         Performs foward pass through all layers.
+        
+        :param inputs: (batch of) inputs
+        
+        :return: output of the network
         """
         out = inputs
+        
         for layer in self.layers:
             out = layer.forward(out)
 
@@ -29,7 +51,8 @@ class Sequential(BaseModule):
         """
         Performs backward pass through this module.
         
-        :param gradwrtoutput: gradient of loss with respect to the output of this module. shape should be [batch_size, out_features]
+        :param gradwrtoutput: gradient of loss with respect to the output of this module. 
+                              shape should be [batch_size, out_features]
         
         :return: gradient of loss with respect to the input of this module.
         """
@@ -40,6 +63,10 @@ class Sequential(BaseModule):
         return grad_out
 
     def param(self):
+        """
+        Returns parameters of all layers in the sequential nn
+        """
+        
         params = []
         for layer in self.layers:
             for param in layer.param():
