@@ -35,7 +35,7 @@ def test_linear():
     
 # TODO: implement softmax layer for one hot classification and cross entropy loss functions
 
-def test_sequential(activation_module):
+def test_sequential():
     
     TRAIN_FEATURES = torch.empty(1000, 2).uniform_(0, 1)
     TRAIN_LABELS = h.get_labels(TRAIN_FEATURES, torch.empty(1, 2).fill_(0.5))
@@ -49,8 +49,10 @@ def test_sequential(activation_module):
     
     model = Module.Sequential(Module.Linear(2, 25),
                               Module.ReLU(),
+                              Module.Dropout(),
                               Module.Linear(25, 25),
                               Module.ReLU(),
+                              Module.Dropout(),
                               Module.Linear(25, 2),
                               Module.Tanh())
     loss_fun = Loss.MSE()

@@ -22,13 +22,13 @@ class BaseModule(object):
     def param(self):
         raise NotImplementedError
         
-    def train(self)
+    def train(self):
         """
         Sets training flag to True
         """
         self.train = True
         
-    def eval(self)
+    def eval(self):
         """
         Sets training flag to False
         """
