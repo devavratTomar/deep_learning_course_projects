@@ -7,7 +7,7 @@ class Sequential(BaseModule):
     Implements MLP with layers Linear, RelU, Tanh.
     """
     def __init__(self, *layers):
-        #TODO: check if inputs are of type BaseModule
+        
         self.layers = [layer for layer in layers]
         self.history = dict()
         self.history['loss']=[]
