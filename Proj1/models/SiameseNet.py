@@ -3,7 +3,7 @@ import torch
 
 class BlockConvNet(nn.Module):
     """
-    Creates Convolutional neural network as mentioned here : \site the link\
+    Creates Convolutional neural network.
     """
     
     def __init__(self, n_filters=32, in_channels=1, kernel_size=3, im_shape=[14, 14], fc_nodes=64, n_classes=10):

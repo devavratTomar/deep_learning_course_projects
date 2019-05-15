@@ -4,7 +4,7 @@ import torch
 
 # Since this is a classification problem we use cross entropy loss
 def train_model(model, train_input, train_target, mini_batch_size=50, train_classes=None,
-                val_input=None, val_target=None, val_classes=None, aux_param = 0.5, n_epoch=100, verbose=False):
+                val_input=None, val_target=None, val_classes=None, aux_param = 0.5, n_epoch=200, verbose=False):
     
     optimizer = optim.Adam(model.parameters(), lr=1e-3)
     criterion = nn.CrossEntropyLoss()
