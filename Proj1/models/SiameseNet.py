@@ -6,13 +6,14 @@ class BlockConvNet(nn.Module):
     Creates Convolutional neural network as mentioned here : \site the link\
     """
     
-    def __init__(self, n_filters=8, in_channels=1, kernel_size=3, im_shape=[14, 14], fc_nodes=128, n_classes=10):
+    def __init__(self, n_filters=32, in_channels=1, kernel_size=3, im_shape=[14, 14], fc_nodes=64, n_classes=10):
         super(BlockConvNet, self).__init__()
         
         self.model = nn.Sequential(
-            nn.Conv2d(in_channels, 2*n_filters, kernel_size),
+            nn.Conv2d(in_channels, n_filters//2, kernel_size),
             nn.LeakyReLU(),
-            nn.Conv2d(2*n_filters, n_filters, kernel_size),
+            nn.Dropout2d(0.5),
+            nn.Conv2d(n_filters//2, n_filters, kernel_size),
             nn.LeakyReLU(),
             nn.MaxPool2d(2, 2),
             nn.Dropout2d(0.5)
@@ -42,7 +43,7 @@ class DeepSiameseNet(nn.Module):
     :param in_features: number of features in the output of model
     """
     
-    def __init__(self, model, in_features=20, n_hidden=10):
+    def __init__(self, model, in_features=20, n_hidden=20):
         super(DeepSiameseNet, self).__init__()        
         self.model = model
         
@@ -65,11 +66,10 @@ class DeepSiameseNet(nn.Module):
         out_0 = self.model(x_in_0)
         out_1 = self.model(x_in_1)
         
-        
         #concatenate outputs
         out_concat = torch.cat((out_0, out_1), 1)
         
         #output of MLP layers to classify if img_0 is greater than img_1
         out_mlp = self.mlp_layers(out_concat)
         
-        return out_mlp
+        return torch.cat((out_mlp, out_0, out_1), 1)
