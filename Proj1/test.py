@@ -39,42 +39,69 @@ def perform_experiments(n_runs=10, n_points=1000, n_epochs=200, run_best=False, 
         
         if not run_best:
             ##############################################################################
+            # Creates Multilayer Perceptron Network with ReLU activationss
             mlp_net = MLPNet(in_features=392, out_features=2, n_layers=3, n_hidden=16)
+            
+            # Set train flag on (for dropouts)
             mlp_net.train()
+            
+            # Train the model and append the history
             history_mlp_net.append(train_model(mlp_net, train_input=TRAIN_INPUT.view((n_points, -1)), train_target=TRAIN_TARGET, aux_param=1.0,
                                                val_input=TEST_INPUT.view((n_points, -1)), val_target=TEST_TARGET, n_epochs=n_epochs, verbose=verbose))
             
+           
+            # Set train flag to False for getting accuracies on validation data
             mlp_net.eval()
             acc = get_accuracy(mlp_net, TEST_INPUT.view((n_points, -1)), TEST_TARGET)*100.0
             print("Run: {}, Mlp_net Test Accuracy: {:.3f} %".format(n_run, acc))
+            
             ##############################################################################
+            # Create ConvNet without auxiliary outputs
             conv_net = ConvNet(n_classes=2, n_layers=3, n_features=16)
+            
+            # Set train flag on (for dropouts)
             conv_net.train()
+            
+            # Train the model and append the history
             history_conv_net.append(train_model(conv_net, train_input=TRAIN_INPUT, train_target=TRAIN_TARGET, aux_param=1.0,
                                                 val_input=TEST_INPUT, val_target=TEST_TARGET, n_epochs=n_epochs, verbose=verbose))
             
+            # Set train flag to False for getting accuracies on validation data
             conv_net.eval()
             acc = get_accuracy(conv_net, TEST_INPUT, TEST_TARGET)*100.0
             print("Run: {}, ConvNet Test Accuracy: {:.3f} %".format(n_run, acc))
+            
             ##############################################################################
+            # Create ConvNet with auxiliary outputs
             conv_net_aux = ConvNet(n_classes=22, n_layers=3, n_features=16)
+            
+            # Set train flag on (for dropouts)
             conv_net_aux.train()
+            
+            # Train the model and append the history
             history_conv_net_aux.append(train_model(conv_net_aux, train_input=TRAIN_INPUT, train_target=TRAIN_TARGET, aux_param=1.0,
                                                     train_classes=TRAIN_CLASSES, val_input=TEST_INPUT, val_target=TEST_TARGET, val_classes=TEST_CLASSES,
                                                     n_epochs=n_epochs, verbose=verbose))
             
+            # Set train flag to False for getting accuracies on validation data
             conv_net_aux.eval()
             acc = get_accuracy(conv_net_aux, TEST_INPUT, TEST_TARGET)*100.0
             print("Run: {}, ConvNet Auxilary Test Accuracy: {:.3f} %".format(n_run, acc))
+            
             ##############################################################################
+            # Create Siamese Network without auxiliary outputs
             conv_net = BlockConvNet()
             conv_net_siamese = DeepSiameseNet(conv_net)
             
+            # Set train flag on (for dropouts)
             conv_net.train()
             conv_net_siamese.train()
+            
+            # Train the model and append the history
             history_siamese.append(train_model(conv_net_siamese, train_input=TRAIN_INPUT, train_target=TRAIN_TARGET,
                                                val_input=TEST_INPUT, val_target=TEST_TARGET, n_epochs=n_epochs, verbose=verbose))
             
+            # Set train flag to False for getting accuracies on validation data
             conv_net.eval()
             conv_net_siamese.eval()
             
@@ -82,15 +109,20 @@ def perform_experiments(n_runs=10, n_points=1000, n_epochs=200, run_best=False, 
             print("Run: {}, Siamese Test Accuracy: {:.3f} %".format(n_run, acc))
         
         ##############################################################################
+        # Create Siamese Network with auxiliary outputs
         conv_net = BlockConvNet()
         conv_net_siamese_aux = DeepSiameseNet(conv_net)
         
+        # Set train flag on (for dropouts)
         conv_net.train()
         conv_net_siamese_aux.train()
+        
+        # Train the model and append the history
         history_siamese_aux.append(train_model(conv_net_siamese_aux, train_input=TRAIN_INPUT, train_target=TRAIN_TARGET, train_classes=TRAIN_CLASSES,
                                                val_input=TEST_INPUT, val_target=TEST_TARGET, val_classes=TEST_CLASSES, aux_param=3.0,
                                                n_epochs=n_epochs, verbose=verbose))
         
+        # Set train flag to False for getting accuracies on validation data
         conv_net.eval()
         conv_net_siamese_aux.eval()
         
