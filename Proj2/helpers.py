@@ -32,3 +32,58 @@ def plot_points(data, labels, title):
     plt.title(title)
     plt.axis('equal')
     plt.show()
+    
+    
+def prepare_standardplot(title, loss, xlabel):
+    fig, (ax1, ax2) = plt.subplots(1, 2)
+    fig.suptitle(title)
+    ax1.set_ylabel(loss)
+    ax1.set_xlabel(xlabel)
+    #ax1.set_yscale('log')
+    ax2.set_ylabel('accuracy [% correct]')
+    ax2.set_xlabel(xlabel)
+    return fig, ax1, ax2
+
+
+def finalize_standardplot(fig, ax1, ax2):
+    ax1handles, ax1labels = ax1.get_legend_handles_labels()
+    if len(ax1labels) > 0:
+        ax1.legend(ax1handles, ax1labels)
+    ax2handles, ax2labels = ax2.get_legend_handles_labels()
+    if len(ax2labels) > 0:
+        ax2.legend(ax2handles, ax2labels)
+    fig.tight_layout()
+    plt.subplots_adjust(top=0.9)
+    
+
+def plot_history(history, title, loss):
+    
+    fig, ax1, ax2 = prepare_standardplot(title, loss, 'epoch')
+    ax1.plot(history['loss'], label = "training")
+    ax1.plot(history['val_loss'], label = "validation")
+    ax2.plot(history['acc'], label = "training")
+    ax2.plot(history['val_acc'], label = "validation")
+    finalize_standardplot(fig, ax1, ax2)
+    fig.set_figheight(5)
+    fig.set_figwidth(15)
+    return fig
+
+
+def comparison_plot(history1, history2, label1, label2, title, fig_size, max_epoch=None):
+    fig, ax1, ax2 = prepare_standardplot(title, "loss", "epochs")
+    if max_epoch is None:
+        max_epoch = len(history1['loss'])
+    
+    fig.set_figheight(fig_size[0])
+    fig.set_figwidth(fig_size[1])
+    ax1.plot(history1['loss'][:max_epoch], label=label1 + ' training')
+    ax1.plot(history1['val_loss'][:max_epoch], label=label1 + ' validation')
+    ax1.plot(history2['loss'][:max_epoch], label=label2 + ' training')
+    ax1.plot(history2['val_loss'][:max_epoch], label=label2 + ' validation')
+    ax2.plot(history1['acc'][:max_epoch], label=label1 + ' training')
+    ax2.plot(history1['val_acc'][:max_epoch], label=label1 + ' validation')
+    ax2.plot(history2['acc'][:max_epoch], label=label2 + ' training')
+    ax2.plot(history2['val_acc'][:max_epoch], label=label2 + ' validation')
+    #plt.gca().yaxis.set_minor_formatter(ticker.FormatStrFormatter("%.2f"))
+    finalize_standardplot(fig, ax1, ax2)
+    return fig
