@@ -155,13 +155,13 @@ def test_softmax(dropout=False, opt=Optimizer.ADAM(lr=0.001), ReLu=True, nb_neur
                         fig_size=(5, 15))
 """
 
-Nodrop_model  = test_softmax(nb_neuron=500)
+#Nodrop_model  = test_softmax(nb_neuron=500)
 Yesdrop_model = test_softmax(nb_neuron=500, dropout=True)
 
-fig = h.comparison_plot(Nodrop_model.history,
-                        Yesdrop_model.history,
-                        label1="No Dropout",
-                        label2="Dropout",
-                        title="Neural Network with and without dropouts",
-                        fig_size=(3, 8))
+#fig = h.comparison_plot(Nodrop_model.history,
+#                        Yesdrop_model.history,
+#                        label1="No Dropout",
+#                        label2="Dropout",
+#                        title="Neural Network with and without dropouts",
+#                        fig_size=(3, 8))
 
