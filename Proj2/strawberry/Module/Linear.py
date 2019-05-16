@@ -1,7 +1,6 @@
 import torch
 from .base_module import BaseModule
 
-#TODO: Add GPU support for faster computation
 
 class Linear(BaseModule):
     """
@@ -13,8 +12,7 @@ class Linear(BaseModule):
     """
     
     def __init__(self, in_features, out_features):
-        #TODO: add an initialization module that can initialize parameters according to a distribution
-        #TODO: make bias optional?
+
         std = (2./(in_features*out_features))**0.5
         self.W = torch.empty((in_features, out_features)).normal_(std=std)
         self.b = torch.empty((1, out_features)).zero_()
@@ -34,7 +32,6 @@ class Linear(BaseModule):
         """
         assert type(inputs) == torch.Tensor
         
-        # reset previous gradients?    
         self.data = inputs
         return torch.mm(inputs, self.W) + self.b
         
@@ -46,7 +43,6 @@ class Linear(BaseModule):
         
         :return: gradient of loss with respect to the input of this module.
         """
-        #TODO: prove that the gradients of loss with respect to W and b is the following in report
         #gradient accumulation
         self.grad_W = torch.mm(self.data.t(), gradwrtoutput)
         self.grad_b = gradwrtoutput.sum(dim=0, keepdim=True)

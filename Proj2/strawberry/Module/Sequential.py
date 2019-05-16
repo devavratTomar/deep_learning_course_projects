@@ -1,25 +1,47 @@
+"""
+Class representing sequential architecture
+"""
+
 from .base_module import BaseModule
 import torch
 from strawberry.utils import get_accuracy
 
 class Sequential(BaseModule):
     """
-    Implements MLP with layers Linear, RelU, Tanh.
+    Implements MLP with layers Linear, RelU, Tanh etc.
     """
     def __init__(self, *layers):
-        #TODO: check if inputs are of type BaseModule
+        
         self.layers = [layer for layer in layers]
+        
+        #history object for storing train/val loss and/or accuracy
         self.history = dict()
         self.history['loss']=[]
         self.history['val_loss']=[]
         self.history['acc']=[]
         self.history['val_acc']=[]
+        
+        
+    def add(self, layer):
+        """
+        Adds layer to the network
+        
+        :param layer: adds layer to the architecture
+        """
+        
+        self.layers.append(layer)
+        
     
     def forward(self, inputs):
         """
         Performs foward pass through all layers.
+        
+        :param inputs: (batch of) inputs
+        
+        :return: output of the network
         """
         out = inputs
+        
         for layer in self.layers:
             out = layer.forward(out)
 
@@ -29,7 +51,8 @@ class Sequential(BaseModule):
         """
         Performs backward pass through this module.
         
-        :param gradwrtoutput: gradient of loss with respect to the output of this module. shape should be [batch_size, out_features]
+        :param gradwrtoutput: gradient of loss with respect to the output of this module. 
+                              shape should be [batch_size, out_features]
         
         :return: gradient of loss with respect to the input of this module.
         """
@@ -40,6 +63,10 @@ class Sequential(BaseModule):
         return grad_out
 
     def param(self):
+        """
+        Returns parameters of all layers in the sequential nn
+        """
+        
         params = []
         for layer in self.layers:
             for param in layer.param():
@@ -88,11 +115,10 @@ class Sequential(BaseModule):
         :return: gradient of loss with respect to the input of this module. 
         """
         n_batches = x_train.shape[0]//batch_size
+        self.set_train()
         
         for epoch in range(epochs):
-            
             avg_loss = 0.0
-            
             if accuracy:
                 avg_accuracy = 0.0
             
@@ -101,35 +127,37 @@ class Sequential(BaseModule):
                 train_data   = x_train[batch*batch_size:(batch+1)*batch_size, :]
                 train_labels = y_train[batch*batch_size:(batch+1)*batch_size, :]
                 
+                # Perform train step
+                loss(self.forward(train_data), train_labels)
+                # Backward of loss so that gradients are accumulated in it. Then backword of Model to accumulate its gradients.
+                self.backward(loss.backward())
+                opt.step(self.param())
+                
                 # Update loss average
+                self.eval()
                 model_output = self.forward(train_data)
                 avg_loss = self._get_moving_average(model_output, train_labels, prev_avg=avg_loss, nb=batch, 
                                                     metric=loss)
-                
                 if accuracy:
                     # Update the accuracy average
                     pred = self.predict_from_output(model_output)
                     avg_accuracy = self._get_moving_average(pred, train_labels, prev_avg=avg_accuracy, nb=batch, 
                                                             metric=get_accuracy)
+                self.set_train()
                 
-                # Backward of loss so that gradients are accumulated in it. Then backword of Model to accumulate its gradients.
-                self.backward(loss.backward())
-        
-                opt.step(self.param())
-                
-            self.eval() 
+            
             # Update loss average
-            model_output = self.forward(train_data)
-            avg_loss = self._get_moving_average(model_output, train_labels, prev_avg=avg_loss,
-                                               nb=epochs, metric=loss)
+#            model_output = self.forward(train_data)
+#            avg_loss = self._get_moving_average(model_output, train_labels, prev_avg=avg_loss,
+#                                               nb=epochs, metric=loss)
+            self.eval()
             self.history['loss'].append(avg_loss)
-                
             if accuracy:
-                    # Update the accuracy average
-                    pred = self.predict_from_output(model_output)
-                    avg_accuracy = self._get_moving_average(pred, train_labels, prev_avg=avg_accuracy,
-                                               nb=batch, metric=get_accuracy) 
-                    self.history['acc'].append(avg_accuracy)
+                # Update the accuracy average
+                pred = self.predict_from_output(model_output)
+                avg_accuracy = self._get_moving_average(pred, train_labels, prev_avg=avg_accuracy,
+                                                        nb=batch, metric=get_accuracy) 
+                self.history['acc'].append(avg_accuracy)
                     
             if validation_set is not None:
                 # Predict on validation data
@@ -140,7 +168,7 @@ class Sequential(BaseModule):
                 if accuracy:
                     val_acc = get_accuracy(val_pred, validation_set[1])
                     self.history['val_acc'].append(val_acc)
-        
+            
             if verbose:
                 info_msg = "Epoch: {}, Training loss: {:.4f}".format(epoch, self.history['loss'][-1])
                 
@@ -150,11 +178,9 @@ class Sequential(BaseModule):
                 if validation_set is not None:
                     info_msg += ", Validation Loss: {0:.4f}".format(self.history['val_loss'][-1])
                     if accuracy:
-                        info_msg += ", Validation Acc.: {0:.2f}%".format(self.history['val_acc'][-1])
-                        
+                        info_msg += ", Validation Acc.: {0:.2f}%".format(self.history['val_acc'][-1])   
                 print(info_msg)
             self.set_train()
-            
         
     def predict(self, x):  
         """

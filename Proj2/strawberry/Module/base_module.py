@@ -1,9 +1,19 @@
+"""
+Base Module class defining 3 main functionalities (forwards, backward, param)
+"""
+
 class BaseModule(object):
     """
     This is the base class for all submodules.
     """ 
-    train_flag = True    
+    
+    #defines if training or predicting mode
+    train_flag = True  
+    
     def forward(self):
+        """
+        Performs forward pass
+        """
         raise NotImplementedError
     
     def backward(self):
@@ -16,6 +26,9 @@ class BaseModule(object):
         raise NotImplementedError
     
     def param(self):
+        """
+        Returns parameters and their corresponding gradients
+        """
         raise NotImplementedError
         
     def set_train(self):
