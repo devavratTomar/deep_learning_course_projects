@@ -16,7 +16,6 @@ class CrossEntropy(BaseModule):
         :param inputs: scores (logits) of each class with shape [batch_size, in_features]
         :param targets: 
         """
-        
         N = inputs.shape[0] if self.reduce else 1.
         
         max_inp = inputs.max(1)[0]    
@@ -36,10 +35,7 @@ class CrossEntropy(BaseModule):
         Computes gradients with respect to the input of this module and returns it
         """
         N = self.softmax.shape[0] if self.reduce else 1.
-                
         return (-self.targets + self.softmax)/N
-        
-        
     
     def __call__(self, prediction, labels):
         """

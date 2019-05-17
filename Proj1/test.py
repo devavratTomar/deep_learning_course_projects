@@ -9,7 +9,7 @@ def perform_experiments(n_runs=10, n_points=1000, n_epochs=200, run_best=False, 
     """
     Perform experiments for 5 different neural network architectures and losses.
     
-    To run all experiments call this function without default params
+    To run all experiments call this function with default params
     
     :param n_runs: number of runs for which experiment should be repeated
     :param n_points: number of training and testing data points used in the experiments
@@ -27,7 +27,6 @@ def perform_experiments(n_runs=10, n_points=1000, n_epochs=200, run_best=False, 
     for n_run in range(n_runs):
         data_set = generate_pair_sets(n_points)
         MAX_VAL = 255.0
-        
         
         TRAIN_INPUT = Variable(data_set[0])/MAX_VAL
         TRAIN_TARGET = Variable(data_set[1])
