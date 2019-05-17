@@ -44,11 +44,11 @@ def prepare_standardplot(title, loss, xlabel):
     fig.suptitle(title, fontsize=18)
     ax1.set_ylabel(loss, fontsize=12)
     ax1.set_xlabel(xlabel, fontsize=12)
-    ax1.set_ylim(0, 0.2) #was used sometimes for better plotting
+    #[ax1.set_ylim(0, 0.3) #was used sometimes for better plotting
     #ax1.set_yscale('log')
     ax2.set_ylabel('accuracy [% correct]',  fontsize=12)
     ax2.set_xlabel(xlabel,  fontsize=12)
-    ax2.set_ylim(90, 100) #was used sometimes for better plotting
+    #ax2.set_ylim(86, 100) #was used sometimes for better plotting
     return fig, ax1, ax2
 
 

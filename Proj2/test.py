@@ -43,7 +43,7 @@ def test_linear():
 
 
 
-def test_sequential(opt):
+def test_sequential(opt, epochs=200):
     """
     This method tests sequential method using MSE loss and takes optimizer as a parameter
     """
@@ -68,6 +68,8 @@ def test_sequential(opt):
                               Module.ReLU(),
                               Module.Linear(25, 25),
                               Module.ReLU(),
+                              Module.Linear(25, 25),
+                              Module.ReLU(),
                               Module.Linear(25, 2),
                               Module.Tanh())
 
@@ -75,7 +77,7 @@ def test_sequential(opt):
     loss_fun = Loss.MSE()
         
     # train model fr 200 epochs for the given optimizer with batch size of 10
-    model.train(TRAIN_FEATURES, TRAIN_LABELS, epochs=200, batch_size=10, opt=opt, 
+    model.train(TRAIN_FEATURES, TRAIN_LABELS, epochs=epochs, batch_size=10, opt=opt, 
                 loss=loss_fun, verbose=True, accuracy=True, 
                 validation_set=(TEST_FEATURES, TEST_LABELS))
 
@@ -99,7 +101,7 @@ def get_activation(ReLU):
         return Module.Tanh()
     
     
-def test_softmax(opt, dropout=False, ReLu=True, nb_neuron=25):
+def test_softmax(opt, dropout=False, ReLu=True, nb_neuron=25, epochs=200):
     """
     Learns sequential model with softmax layer and cross entropy loss
     
@@ -128,7 +130,7 @@ def test_softmax(opt, dropout=False, ReLu=True, nb_neuron=25):
     # create a sequential model
     model = Module.Sequential()
 
-    # add linear layer with ReLu or Tanh activation depending on a ReLU parameter
+    # add 1st linear layer with ReLu or Tanh activation depending on a ReLU parameter
     model.add(Module.Linear(2, nb_neuron))
     model.add(get_activation(ReLu))
       
@@ -144,6 +146,13 @@ def test_softmax(opt, dropout=False, ReLu=True, nb_neuron=25):
     if dropout:
         model.add(Module.Dropout(p=.5))
         
+    # add hidden layer with nb_neuron neurons followed by an activation
+    model.add(Module.Linear(nb_neuron, nb_neuron))
+    model.add(get_activation(ReLu))
+    
+    if dropout:
+        model.add(Module.Dropout(p=.5))
+        
     # add final linear layer
     model.add(Module.Linear(nb_neuron, 2))
 
@@ -151,7 +160,7 @@ def test_softmax(opt, dropout=False, ReLu=True, nb_neuron=25):
     loss_ce = Loss.CrossEntropy();
     
     # train the model for the given parameters + 200 epochs, 10 batch size
-    model.train(TRAIN_FEATURES, TRAIN_LABELS, epochs=200, batch_size=10, opt=opt, 
+    model.train(TRAIN_FEATURES, TRAIN_LABELS, epochs=epochs, batch_size=10, opt=opt, 
                 loss=loss_ce, verbose=True, accuracy=True, 
                 validation_set=(TEST_FEATURES, TEST_LABELS))
      
@@ -160,7 +169,59 @@ def test_softmax(opt, dropout=False, ReLu=True, nb_neuron=25):
 
     h.plot_points(TEST_FEATURES, test_labels, "Test points and predictions")
     return model
+
+
+
+def run_experiment(epochs=200):
    
+    # Relu and Tanh comparison + plot
+    print("Training Sequential NN with ReLU as activation function")
+    ReLu_model = test_softmax(opt=Optimizer.ADAM(lr=0.001),
+                              epochs=epochs)
+    print("Training Sequential NN with Tanh as activation function")
+    Tanh_model = test_softmax(opt=Optimizer.ADAM(lr=0.001), 
+                              ReLu=False,
+                              epochs=epochs)
+    
+    fig = h.comparison_plot(ReLu_model.history,
+                            Tanh_model.history,
+                            label1="ReLU",
+                            label2="Tanh",
+                            title="Neural Network with ReLU vs Tanh",
+                            fig_size=(4, 10))
+    
+    
+    # with and without dropout comparison + plot
+    # for report it was run using nb_neuron=500
+    print("Training Sequential NN with CE loss and without dropouts")
+    Nodrop_model  = test_softmax(opt=Optimizer.ADAM(lr=0.001), 
+                                 epochs=epochs)
+    print("Training Sequential NN with CE loss and dropouts(p=0.5)")
+    Yesdrop_model = test_softmax(opt=Optimizer.ADAM(lr=0.001), 
+                                 dropout=True,
+                                 epochs=epochs)
+    
+    fig = h.comparison_plot(Nodrop_model.history,
+                            Yesdrop_model.history,
+                            label1="No Dropout",
+                            label2="Dropout",
+                            title="Neural Network with and without dropouts",
+                            fig_size=(4, 10))
+    
+    #ADAM and SGD comparison + plot
+    print("Training Sequential NN with SGD")
+    SGD_model  = test_softmax(opt=Optimizer.SGD(lr=0.1),
+                              epochs=epochs)
+    print("Training Sequential NN with ADAM optimizer")
+    ADAM_model = test_softmax(Optimizer.ADAM(lr=0.001),
+                              epochs=epochs)
+    
+    fig = h.comparison_plot(SGD_model.history,
+                            ADAM_model.history,
+                            label1="SGD",
+                            label2="ADAM",
+                            title="Neural Network with SGD vs ADAM",
+                            fig_size=(4, 10))
     
 ###########################################_______#########################################
 ##########################################| TEST |#########################################
@@ -172,9 +233,11 @@ test_linear()
 
 #MSE and CrossEntropy comparison + plot
 print("Training Sequential NN with MSE Loss")
-MSE_model = test_sequential(opt=Optimizer.ADAM(lr=0.001))
+MSE_model = test_sequential(opt=Optimizer.ADAM(lr=0.001),
+                            epochs=100)
 print("Training Sequential NN with Cross Entropy Loss")
-Cross_entropy_model = test_softmax(opt=Optimizer.ADAM(lr=0.001))
+Cross_entropy_model = test_softmax(opt=Optimizer.ADAM(lr=0.001),
+                                   epochs=100)
 
 fig = h.comparison_plot(MSE_model.history,
                         Cross_entropy_model.history,
@@ -184,43 +247,12 @@ fig = h.comparison_plot(MSE_model.history,
                         fig_size=(4, 10))
 
 
-#Relu and Tanh comparison + plot
-print("Training Sequential NN with ReLU as activation function")
-ReLu_model = test_softmax(opt=Optimizer.ADAM(lr=0.001))
-print("Training Sequential NN with Tanh as activation function")
-Tanh_model = test_softmax(opt=Optimizer.ADAM(lr=0.001), ReLu=False)
 
-fig = h.comparison_plot(ReLu_model.history,
-                        Tanh_model.history,
-                        label1="ReLU",
-                        label2="Tanh",
-                        title="Neural Network with ReLU vs Tanh",
-                        fig_size=(4, 10))
+#!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+# The experiments take long, because they run all the possible combinations
+# 6 models in total, uncomment the line below if you want to run it.
+# In report plots were produced with default values, meaning epochs=200
+# to make it faster this one will be run with only 100 epochs
+#!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-
-#with and without dropout comparison + plot
-print("Training Sequential NN with CE loss and without dropouts")
-Nodrop_model  = test_softmax(opt=Optimizer.ADAM(lr=0.001), nb_neuron=500)
-print("Training Sequential NN with CE loss and dropouts(p=0.5)")
-Yesdrop_model = test_softmax(opt=Optimizer.ADAM(lr=0.001), nb_neuron=500, dropout=True)
-
-fig = h.comparison_plot(Nodrop_model.history,
-                        Yesdrop_model.history,
-                        label1="No Dropout",
-                        label2="Dropout",
-                        title="Neural Network with and without dropouts",
-                        fig_size=(4, 10))
-
-#ADAM and SGD comparison + plot
-print("Training Sequential NN with SGD")
-SGD_model  = test_softmax(opt=Optimizer.SGD(lr=0.1))
-print("Training Sequential NN with ADAM optimizer")
-ADAM_model = test_softmax(Optimizer.ADAM(lr=0.0001))
-
-fig = h.comparison_plot(SGD_model.history,
-                        ADAM_model.history,
-                        label1="SGD",
-                        label2="ADAM",
-                        title="Neural Network with SGD vs ADAM",
-                        fig_size=(4, 10))
-
+#run_experiment(epochs=100)
