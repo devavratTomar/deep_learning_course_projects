@@ -29,7 +29,7 @@ def perform_experiments(n_runs=10, n_points=1000, n_epochs=200, run_best=False, 
         MAX_VAL = 255.0
         
         
-        TRAIN_INPUT = Variable(data_set[0])/MAX_VAL 
+        TRAIN_INPUT = Variable(data_set[0])/MAX_VAL
         TRAIN_TARGET = Variable(data_set[1])
         TRAIN_CLASSES = Variable(data_set[2])
         
@@ -46,7 +46,7 @@ def perform_experiments(n_runs=10, n_points=1000, n_epochs=200, run_best=False, 
             mlp_net.train()
             
             # Train the model and append the history
-            history_mlp_net.append(train_model(mlp_net, train_input=TRAIN_INPUT.view((n_points, -1)), train_target=TRAIN_TARGET, aux_param=1.0,
+            history_mlp_net.append(train_model(mlp_net, train_input=TRAIN_INPUT.view((n_points, -1)), train_target=TRAIN_TARGET,
                                                val_input=TEST_INPUT.view((n_points, -1)), val_target=TEST_TARGET, n_epochs=n_epochs, verbose=verbose))
             
            
@@ -63,7 +63,7 @@ def perform_experiments(n_runs=10, n_points=1000, n_epochs=200, run_best=False, 
             conv_net.train()
             
             # Train the model and append the history
-            history_conv_net.append(train_model(conv_net, train_input=TRAIN_INPUT, train_target=TRAIN_TARGET, aux_param=1.0,
+            history_conv_net.append(train_model(conv_net, train_input=TRAIN_INPUT, train_target=TRAIN_TARGET,
                                                 val_input=TEST_INPUT, val_target=TEST_TARGET, n_epochs=n_epochs, verbose=verbose))
             
             # Set train flag to False for getting accuracies on validation data
